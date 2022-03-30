@@ -14,16 +14,16 @@ async function getAllUsers() {
 
 async function createUser({ username, password }) {
   try {
-    const result = await client.query(`
-      INSERT INTO users(username, password) 
+    const { rows } = await client.query(`
+      INSERT INTO users(username, password)
       VALUES ($1, $2);
-    `, [ "some_name", "some_password" ]);
+    `, [username, password]);
 
-    return result
+    return rows;
   } catch (error) {
     throw error;
   }
-}
+}  
 
 module.exports = {
   client,
