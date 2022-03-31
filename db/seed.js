@@ -1,6 +1,5 @@
 //grab our client with destructuring from the export in index.js
-const { client, getAllUsers, createUser } = require('./index');
-
+const { client, getAllUsers, createUser } = require("./index");
 
 //this function should call a query which drops all tables from our database
 async function dropTables() {
@@ -14,10 +13,9 @@ async function dropTables() {
     console.log("Finished dropping the tables...");
   } catch (error) {
     console.error("Error dropping tables!");
-    throw error; 
+    throw error;
   }
 }
-
 
 //this function should call a query which creates all tables for our database
 async function createTables() {
@@ -28,27 +26,31 @@ async function createTables() {
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         username varchar(255) UNIQUE NOT NULL,
-        password varchar(255) NOT NULL
+        password varchar(255) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        location VARCHAR(255) NOT NULL,
+        active BOOLEAN DEFAULT true
       );
     `);
 
     console.log("Finished building the tables!");
   } catch (error) {
     console.error("Error building tables!");
-    throw error; 
+    throw error;
   }
 }
-
 
 async function createInitialUsers() {
   try {
     console.log("Starting to create users!");
 
-    const albert = await createUser({ username: 'albert', password: 'bertie99' });
-    const sandra = await createUser({ username: 'sandra', password: 'glamgal' });
-    
-    console.log(albert);
-    console.log(sandra);
+    await createUser({ username: 'albert', password: 'bertie99', 
+        name: 'albert', location: 'canada' });
+    await createUser({ username: 'sandra', password: '2sandy4me', 
+        name: 'sandra', location: 'mexico' });
+    await createUser({ username: 'glamgal', password: 'soglam', 
+        name: 'becky', location: 'california' });
+
     console.log("Finished creating users!");
   } catch (error) {
     console.error("Error creating users!");
@@ -65,9 +67,8 @@ async function rebuildDB() {
     await createInitialUsers();
   } catch (error) {
     console.log(error);
-  } 
+  }
 }
-
 
 async function testDB() {
   try {
@@ -83,13 +84,7 @@ async function testDB() {
   }
 }
 
-
-
 rebuildDB()
   .then(testDB)
   .catch(console.error)
   .finally(() => client.end());
-
-
-
-
