@@ -27,7 +27,7 @@ async function createUser({
 
 async function getAllUsers() {
   const { rows } = await client.query(
-    `SELECT id, username
+    `SELECT id, username, name, location, active
     FROM users;
     `);
 
