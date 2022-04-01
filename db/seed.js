@@ -1,5 +1,5 @@
 //grab our client with destructuring from the export in index.js
-const { client, getAllUsers, createUser } = require("./index");
+const { client, getAllUsers, createUser, updateUser } = require("./index");
 
 //this function should call a query which drops all tables from our database
 async function dropTables() {
@@ -76,6 +76,14 @@ async function testDB() {
 
     const users = await getAllUsers();
     console.log("getAllUsers:", users);
+    console.log("Result", users);
+
+    console.log("Calling updateUser on users[0]")
+    const updateUserResult = await updateUser(users[0].id, {
+      name: "Newname Sogood",
+      location: "Lesterville, KY"
+    });
+    console.log("Result", updateUserResult);
 
     console.log("Finished database tests!");
   } catch (error) {

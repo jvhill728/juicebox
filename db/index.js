@@ -11,28 +11,19 @@ async function createUser({
   location
  }) {
   try {
-    const { rows } = await client.query(`
+    const { rows: [user] } = await client.query(`
       INSERT INTO users(username, password, name, location)
       VALUES ($1, $2, $3, $4)
       ON CONFLICT (username) DO NOTHING
       RETURNING *;
     `, [username, password, name, location]);
 
-    return rows;
+    return user;
   } catch (error) {
     throw error;
   }
 }  
 
-
-async function getAllUsers() {
-  const { rows } = await client.query(
-    `SELECT id, username, name, location, active
-    FROM users;
-    `);
-
-    return rows;
-}
 
 async function updateUser(id, fields = {}) {
   //build the set string
@@ -48,7 +39,7 @@ async function updateUser(id, fields = {}) {
   }
 
   try {
-    const result = await client.query(`
+    const {rows: [user] } = await client.query(`
       UPDATE users
       SET ${ setString }
       WHERE id=${ id }
@@ -56,10 +47,21 @@ async function updateUser(id, fields = {}) {
       `, Object.values(fields));
 
 
-    return result;  
+    return user;  
   } catch (error) {
     throw error;
   }
+
+async function getAllUsers() {
+  const { rows } = await client.query(
+    `SELECT id, username, name, location, active
+    FROM users;
+    `);
+
+    return rows;
+}
+
+
 
 
 
@@ -69,4 +71,5 @@ module.exports = {
   client,
   createUser,
   getAllUsers,
+  updateUser,
 }
