@@ -39,7 +39,7 @@ async function updateUser(id, fields = {}) {
   }
 
   try {
-    const {rows: [user] } = await client.query(`
+    const { rows: [user] } = await client.query(`
       UPDATE users
       SET ${ setString }
       WHERE id=${ id }
@@ -52,6 +52,10 @@ async function updateUser(id, fields = {}) {
     throw error;
   }
 
+
+
+}
+
 async function getAllUsers() {
   const { rows } = await client.query(
     `SELECT id, username, name, location, active
@@ -59,12 +63,6 @@ async function getAllUsers() {
     `);
 
     return rows;
-}
-
-
-
-
-
 }
 
 module.exports = {
