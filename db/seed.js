@@ -5,7 +5,8 @@ const { client, getAllUsers,
                 createPost,
                 updatePost,
                 getAllPosts,
-                getPostsByUser } = require("./index");
+                getPostsByUser, 
+                getUserById} = require("./index");
 
 //this function should call a query which drops all tables from our database
 async function dropTables() {
@@ -13,6 +14,7 @@ async function dropTables() {
     console.log("Starting to drop tables...");
 
     await client.query(`
+      DROP TABLE IF EXISTS posts;
       DROP TABLE IF EXISTS users;
     `);
 
@@ -42,7 +44,8 @@ async function createTables() {
         "authorId" INTEGER REFERENCES users(id) NOT NULL,
         title VARCHAR(255) NOT NULL,
         active BOOLEAN DEFAULT true
-      )`);
+      );
+    `);
 
     console.log("Finished building the tables!");
   } catch (error) {
@@ -69,6 +72,35 @@ async function createInitialUsers() {
   }
 }
 
+async function createInitialPost() {
+  try {
+    const [albert, sandra, glamgal] = await getAllUsers();
+
+    console.log("Starting to create posts...");
+    await createPost({
+      authorId: albert.id,
+      title: "First Post",
+      content: "This is my first post. I hope I love writing blogs!"
+    });
+
+    await createPost({
+      authorId: sandra.id,
+      title: "How does this work?",
+      content: "Seriously, does this even do anything?"
+    });
+
+    await createPost({
+      authorId: glamgal.id,
+      title: "Living the Glam Life",
+      content: "Do you even? I swear that half of you are posing."
+    });
+    console.log("Finished creating posts!");
+  } catch (error) {
+    console.log("Error creating posts!");
+    throw error;
+  }
+}
+
 async function rebuildDB() {
   try {
     client.connect();
@@ -76,6 +108,7 @@ async function rebuildDB() {
     await dropTables();
     await createTables();
     await createInitialUsers();
+    await createInitialPost();
   } catch (error) {
     console.log(error);
   }
@@ -95,6 +128,17 @@ async function testDB() {
       location: "Lesterville, KY"
     });
     console.log("Result", updateUserResult);
+
+    console.log("Calling updatePost on posts[0]");
+    const updatePostResult = await updatePost(posts[0].id, {
+      title: "New Title",
+      content: "Updated Content"
+    });
+    console.log("Result:", updatePostResult);
+
+    console.log("Calling getUserById with 1");
+    const albert = await getUserById(1);
+    console.log("Result:", albert);
 
     console.log("Finished database tests!");
   } catch (error) {
