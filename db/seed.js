@@ -6,7 +6,8 @@ const { client, getAllUsers,
                 updatePost,
                 getAllPosts,
                 getPostsByUser, 
-                getUserById} = require("./index");
+                getUserById,
+              } = require("./index");
 
 //this function should call a query which drops all tables from our database
 async function dropTables() {
@@ -43,6 +44,7 @@ async function createTables() {
         id SERIAL PRIMARY KEY,
         "authorId" INTEGER REFERENCES users(id) NOT NULL,
         title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
         active BOOLEAN DEFAULT true
       );
     `);
@@ -72,7 +74,7 @@ async function createInitialUsers() {
   }
 }
 
-async function createInitialPost() {
+async function createInitialPosts() {
   try {
     const [albert, sandra, glamgal] = await getAllUsers();
 
@@ -108,7 +110,7 @@ async function rebuildDB() {
     await dropTables();
     await createTables();
     await createInitialUsers();
-    await createInitialPost();
+    await createInitialPosts();
   } catch (error) {
     console.log(error);
   }
@@ -128,6 +130,11 @@ async function testDB() {
       location: "Lesterville, KY"
     });
     console.log("Result", updateUserResult);
+
+
+    console.log("Calling getAllPosts");
+    const posts = await getAllPosts();
+    console.log("Result:", posts);
 
     console.log("Calling updatePost on posts[0]");
     const updatePostResult = await updatePost(posts[0].id, {

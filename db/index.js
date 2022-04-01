@@ -91,7 +91,7 @@ async function createPost({
   content
 }) {
   try {
-    const { rows: [user] } = await client.query(`
+    const { rows: [ post ] } = await client.query(`
       INSERT INTO posts("authorId", title, content)
       VALUES($1, $2, $3)
       RETURNING *;
