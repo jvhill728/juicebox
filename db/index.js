@@ -57,12 +57,16 @@ async function updateUser(id, fields = {}) {
 }
 
 async function getAllUsers() {
-  const { rows } = await client.query(
-    `SELECT id, username, name, location, active
-    FROM users;
-    `);
+  try {
+    const { rows } = await client.query(
+      `SELECT id, username, name, location, active
+      FROM users;
+      `);
 
-    return rows;
+      return rows;
+    } catch (error) {
+      throw error;
+    }
 }
 
 async function getUserById(userId) {
@@ -102,6 +106,28 @@ async function createPost({
   } catch (error) {
     throw error;
   }
+}
+
+
+async function createTags(tagList) {
+  if (tagList.length === 0) {
+    return;
+  }
+
+  const insertValues = tagList.map(
+    (_, index) => `$${index + 1}`).join('), (');
+  
+  const selectValues = tagList.map(
+    (_, index) => `$${index + 1}`).join(', ');
+   
+
+  try {
+
+
+
+  } catch (error) {
+    throw error;
+  } 
 }
 
 async function updatePost(id, fields = {}) {
@@ -145,7 +171,7 @@ async function getAllPosts () {
 
 async function getPostsByUser(userId) {
   try {
-    const { rows } = client.query(`
+    const { rows } = await client.query(`
       SELECT * FROM posts
       WHERE "authorId"=${ userId };
     `);
