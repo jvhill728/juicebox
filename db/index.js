@@ -1,4 +1,5 @@
 const { Client } = require('pg'); //imports pg module
+const { rows } = require('pg/lib/defaults');
 
 //supply the db name and location of the database
 const client = new Client('postgres://localhost:5432/juicebox-dev');
@@ -116,15 +117,23 @@ async function createTags(tagList) {
 
   const insertValues = tagList.map(
     (_, index) => `$${index + 1}`).join('), (');
+
   
   const selectValues = tagList.map(
     (_, index) => `$${index + 1}`).join(', ');
    
 
   try {
+    const { rows } = await client.query(`
+      INSERT INTO tags(name)
+      VALUES (${ insertValues})
+      ON CONFLICT (name) DO NOTHING;
+      SELECT * FROM tags
+      WHERE name
+      IN (${selectValues});
+      `, tagList);
 
-
-
+    return rows;
   } catch (error) {
     throw error;
   } 
@@ -171,12 +180,17 @@ async function getAllPosts () {
 
 async function getPostsByUser(userId) {
   try {
-    const { rows } = await client.query(`
-      SELECT * FROM posts
+    const { rows: postIds } = await client.query(`
+      SELECT id
+      FROM posts
       WHERE "authorId"=${ userId };
     `);
 
-    return rows;
+    const posts = await Promise.all(postIds.map(
+      post => getPostById( post.id )
+    ));
+
+    return posts;
   } catch (error) {
     throw error;
   }
