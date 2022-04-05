@@ -1,18 +1,14 @@
 //grab our client with destructuring from the export in index.js
 const {
   client,
-  getAllUsers,
   createUser,
   updateUser,
+  getAllUsers,
+  getUserById,
   createPost,
   updatePost,
   getAllPosts,
-  getPostsByUser,
-  getUserById,
-  createTags,
-  createPostTag,
-  addTagsToPost,
-  getPostById,
+  getAllTags,
   getPostsByTagName
 } = require("./index");
 
@@ -79,22 +75,22 @@ async function createInitialUsers() {
     console.log("Starting to create users!");
 
     await createUser({
-      username: "albert",
-      password: "bertie99",
-      name: "albert",
-      location: "canada",
+      username: 'albert',
+      password: 'bertie99',
+      name: 'albert',
+      location: 'Sidney, Australia',
     });
     await createUser({
-      username: "sandra",
-      password: "2sandy4me",
-      name: "sandra",
-      location: "mexico",
+      username: 'sandra',
+      password: '2sandy4me',
+      name: 'Just Sandra',
+      location: 'Ain\t tellin\'',
     });
     await createUser({
-      username: "glamgal",
-      password: "soglam",
-      name: "becky",
-      location: "california",
+      username: 'glamgal',
+      password: 'soglam',
+      name: 'Joshua',
+      location: 'Upper East Side'
     });
 
     console.log("Finished creating users!");
@@ -112,7 +108,7 @@ async function createInitialPosts() {
     await createPost({
       authorId: albert.id,
       title: "First Post",
-      content: "This is my first post. I hope I love writing blogs!",
+      content: "This is my first post. I hope I love writing blogs as much as I love writing them.",
       tags: ["#happy", "#youcandoanything"],
     });
 
@@ -175,17 +171,21 @@ async function testDB() {
       title: "New Title",
       content: "Updated Content",
     });
+    console.log("Result:", updatePostResult);
 
     console.log("Calling updatePost on posts[1], only updating tags");
     const updatePostTagsResult = await updatePost(posts[1].id, {
       tags: ["#youcandoanything", "#redfish", "#bluefish"],
     });
     console.log("Result:", updatePostTagsResult);
-    console.log("Result:", updatePostResult);
 
     console.log("Calling getUserById with 1");
     const albert = await getUserById(1);
     console.log("Result:", albert);
+
+    console.log("Calling getAllTags");
+    const allTags = await getAllTags();
+    console.log("Result:", allTags);
 
     console.log("Calling getPostsByTagName with #happy");
     const postsWithHappy = await getPostsByTagName("#happy");
