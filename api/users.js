@@ -1,6 +1,8 @@
 const express = require('express');
 const { user } = require('pg/lib/defaults');
 const usersRouter = express.Router();
+const jwt = require('jsonwebtoken');
+const { getUserByUsername } = require('../db/index')
 
 usersRouter.use((req, res, next) => {
   console.log("A request is being made to /users");
@@ -29,9 +31,16 @@ usersRouter.post('/login', async (req, res, next) => {
   }
 
   try {
-    const cuser = await getUserByUsername(username);
+    const user = await getUserByUsername(username);
 
     if (user && user.password == password) {
+      console.log(process.env.JWT_SECRET);
+      const token = jwt.sign(user, process.env.JWT_SECRET);
+      console.log(token);
+      console.log("=============");
+
+      const userData = jwt.verify(token, process.env.JWT_SECRET);
+      console.log(userData);
 
       res.send({ message: "you're logged in!"});
     } else {
